@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+
+  server1:
+    image: nginx:alpine
+    container_name: server1
+    volumes:
+      - ./server1/index.html:/usr/share/nginx/html/index.html
+    networks:
+      - lb-network
+
+  server2:
+    image: nginx:alpine
+    container_name: server2
+    volumes:
+      - ./server2/index.html:/usr/share/nginx/html/index.html
+    networks:
+      - lb-network
+
+  loadbalancer:
+    image: nginx:alpine
+    container_name: loadbalancer
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - server1
+      - server2
+    networks:
+      - lb-network
+
+networks:
+  lb-network:
+    driver: bridge
